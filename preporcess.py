@@ -59,11 +59,11 @@ def preprocess_data(data):
     return data
 
 
-def main():
+def preprocess():
     data = get_data()
     data = preprocess_data(data)
     return data
 
 
 if __name__ == '__main__':
-    main()
+    preprocess()
