@@ -30,6 +30,10 @@ import preporcess
 
 class TaskType:
     def __init__(self, task_params, task_type, dataframe):
+        self.y_train = None
+        self.X_test = None
+        self.X_train = None
+        self.y_test = None
         self.dataframe = dataframe
         if self.task_type == "classification":
             self.task_params = self.task_params = [
@@ -54,8 +58,9 @@ class TaskType:
                     # Lasso
                     # lower alpha --> higher regularistion (treats underfitting)
                     'alpha': [0.01, 0.1, 0.5, 1],
-                    "max_iter": [50, 100, 1000, 1500],
+                    "max_iter": [1000, 2000, 3000, 4000, 10000],
                     "warm_start": [True, False],
+                    "tol": [0.001, 0.0001, 0.01, 0.1],
                 }]
 
     def get_model_ready_data(self):
