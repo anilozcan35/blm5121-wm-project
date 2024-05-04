@@ -20,7 +20,7 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.model_selection import GridSearchCV, StratifiedShuffleSplit, train_test_split
 from sklearn.naive_bayes import GaussianNB
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import Ridge, Lasso, LinearRegression
@@ -166,8 +166,12 @@ class ClassificationTask(TaskType):
         # Tahminleme
         y_pred = grid_search.predict(X_test)
 
+        # confusion matrix create ediliyor.
+        fig = plt.figure()
+        sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, fmt='g')
+
         # Sınıflandırma raporu
-        return (classification_report(y_test, y_pred))
+        return classification_report(y_test, y_pred, output_dict= True), fig
 
 
 class ClusteringTask(TaskType):
@@ -205,10 +209,13 @@ class ClusteringTask(TaskType):
         return self.scaled_frame
 
     def show_elbow(self):
+        fig = plt.figure()
         km = KMeans(random_state=42)
         visualiser = KElbowVisualizer(km, k=(2, 10), metric='distortion')
         visualiser.fit(self.clustering_scale_df()) # dataframe scale ediliyor ve fit ediliyor.
         visualiser.show()
+
+        return fig
 
     def km_optima(self):
         km = KMeans(n_clusters=self.n_clusters, random_state=42)
@@ -217,7 +224,8 @@ class ClusteringTask(TaskType):
         # print(km.cluster_centers_, "\n")
         self.km = km
 
-    def cluster_plots(self, x_index=0, y_index=1, rc=None) :
+    def cluster_plots(self, x_index=0, y_index=1, rc=None):
+        fig = plt.figure()
         self.km_optima()
         sns.set_theme(rc=rc, style='whitegrid', palette='bright')
         x_column_name = self.scaled_frame.columns[x_index]
@@ -231,9 +239,7 @@ class ClusteringTask(TaskType):
         plt.ylabel(f"{y_column_name}")
         plt.title("Cluster plots")
         plt.legend()
-        plt.show()
-
-
+        return fig
 
 
 if __name__ == '__main__':
