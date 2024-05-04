@@ -25,7 +25,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import Ridge, Lasso, LinearRegression
 from yellowbrick.cluster import KElbowVisualizer
-import preporcess
+import preprocess
 
 
 class TaskType:
@@ -244,16 +244,16 @@ class ClusteringTask(TaskType):
 
 if __name__ == '__main__':
 
-    df = preporcess.preprocess()
+    df = preprocess.preprocess()
     classifcation_task = ClassificationTask(df)
     prediction = classifcation_task.tune_and_predict_classification("naive_bayes")
     print(prediction)
 
-    df = preporcess.preprocess()
+    df = preprocess.preprocess()
     clusteringtask = ClusteringTask(df)
     clusteringtask.show_elbow()
     clusteringtask.cluster_plots()
 
-    df = preporcess.preprocess()
+    df = preprocess.preprocess()
     regressiontask = RegressionTask(df)
     regressiontask.encode_and_regression()

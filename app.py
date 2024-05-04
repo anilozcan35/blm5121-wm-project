@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import preporcess
+import preprocess
 import model
 
 with st.sidebar:
@@ -10,7 +10,7 @@ with st.sidebar:
 
 st.title("Body Performance Data")
 st.markdown("Toy model and its applications")
-df = preporcess.preprocess()
+df = preprocess.preprocess()
 st.table(df.head())
 col1, col2 = st.columns(2)
 
