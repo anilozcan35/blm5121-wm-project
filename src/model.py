@@ -25,6 +25,7 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 from yellowbrick.cluster import KElbowVisualizer
 import src.preprocess as preprocess
+import pickle
 
 warnings.filterwarnings("ignore")
 
@@ -94,7 +95,7 @@ class RegressionTask(TaskType):
         self.cv = StratifiedShuffleSplit(n_splits=5, test_size=.20, random_state=42)
 
 
-    def encode_and_regression(self):
+    def encode_and_regression(self, dump = True):
         # Eğitim ve test setlerine ayırma
         X_train, X_test, y_train, y_test = super().get_model_ready_data()
 
@@ -107,6 +108,7 @@ class RegressionTask(TaskType):
 
         # En iyi modeli seçme
         best_model = grid_search.best_estimator_
+
 
         # Tahmin yapma
         y_pred = best_model.predict(X_test)
@@ -126,9 +128,13 @@ class RegressionTask(TaskType):
         return mse
 
 
+
+
+
 class ClassificationTask(TaskType):
 
-    def __init__(self, dataframe, task_type="classification", task_params=None, ):
+    def __init__(self, dataframe, task_type="classification", task_params=None):
+        self.model_name = None
         self.task_type = task_type
         super().__init__(task_params, self.task_type, dataframe)
         self.cv = StratifiedShuffleSplit(n_splits=5, test_size=.20, random_state=42)
@@ -140,16 +146,19 @@ class ClassificationTask(TaskType):
             from sklearn.naive_bayes import GaussianNB
             model = GaussianNB()
             param_grid = self.task_params[1]
+            self.model_name = model_name
 
         elif model_name == 'decision_tree':
             from sklearn.tree import DecisionTreeClassifier
             model = DecisionTreeClassifier(random_state=42)
             param_grid = self.task_params[0]
+            self.model_name = model_name
 
         elif model_name == 'knn':
             from sklearn.neighbors import KNeighborsClassifier
             model = KNeighborsClassifier(n_jobs=-1)
             param_grid = self.task_params[2]
+            self.model_name = model_name
 
         else:
             raise Exception("Geçersiz model adı. Lütfen 'naive_bayes', 'decision_tree' veya 'kneighbors' kullanın.")
@@ -163,9 +172,14 @@ class ClassificationTask(TaskType):
         # print(grid_search.best_params_)
         # print(f"Best score: {grid_search.best_score_}")
         # print("\n")
+        best_model = grid_search.best_estimator_
 
         # Tahminleme
-        y_pred = grid_search.predict(X_test)
+        y_pred = best_model.predict(X_test)
+
+        # dump alınması
+        with open(str(self.model_name) + 'model.pkl', 'wb') as f:
+            pickle.dump(best_model, f)
 
         # confusion matrix create ediliyor.
         fig = plt.figure()
@@ -173,6 +187,19 @@ class ClassificationTask(TaskType):
 
         # Sınıflandırma raporu
         return classification_report(y_test, y_pred, output_dict= True), fig
+
+    def predict(self, record_list):
+        raw_df = preprocess.get_data()
+        raw_df.loc[len(raw_df)] = record_list
+        preprocessed_df_with_record, encoder = preprocess.preprocess(pred_mode=True, df=raw_df)
+        with open(str(self.model_name) + 'model.pkl', 'rb') as f:
+            model = pickle.load(f)
+        record_pred = model.predict(preprocessed_df_with_record[preprocessed_df_with_record.columns[:-1]].tail(1))
+        preprocessed_df_with_record.loc[len(preprocessed_df_with_record)]["encoded_class"] = record_pred
+        preprocessed_df_with_record["class"] = encoder.inverse_transform(preprocessed_df_with_record["encoded_class"])
+        classs = preprocessed_df_with_record.iloc[-1]["class"]
+
+        return classs
 
 
 class ClusteringTask(TaskType):
@@ -242,13 +269,46 @@ class ClusteringTask(TaskType):
         plt.legend()
         return fig
 
+df = preprocess.preprocess()
+classifcation_task = ClassificationTask(df)
+prediction = classifcation_task.tune_and_predict_classification("naive_bayes")
+print(prediction)
 
+DATA_PATH = "data/bodyPerformance.csv"
+raw_df = pd.read_csv(DATA_PATH)
+
+raw_df["class"].value_counts()
+
+df.iloc[1]
+df.tail(1)
+
+age = 28
+gender = "M"
+height_cm = 170
+weight_kg = 55.8
+fat = 15.7
+diastolic = 77.0
+systolic = 126.0
+gripForce = 36.4
+forward_cm = 16.3
+sit_ups = 53.0
+jump_cm = 229.0
+classs = "A" #rastgele bir label
+
+
+ss = [age, gender, height_cm, weight_kg, fat, diastolic, systolic, gripForce, forward_cm, sit_ups, jump_cm, classs]
+raw_df.loc[len(raw_df)] = ss
+
+
+
+raw_df["class"]
 if __name__ == '__main__':
 
     df = preprocess.preprocess()
     classifcation_task = ClassificationTask(df)
-    prediction = classifcation_task.tune_and_predict_classification("naive_bayes")
-    print(prediction)
+    prediction = classifcation_task.tune_and_predict_classification("decision_tree")
+    pred = classifcation_task.predict(ss)
+    print(pred)
 
     df = preprocess.preprocess()
     clusteringtask = ClusteringTask(df)

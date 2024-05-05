@@ -56,13 +56,17 @@ def preprocess_data(data):
     data.encoded_class = data.encoded_class.astype("category")
 
     data.drop(columns=['class'], inplace=True)
-    return data
+    return data, encode
 
 
-def preprocess():
+def preprocess(pred_mode=False, df=None):
+    if pred_mode:
+        data, encoder = preprocess_data(df)
+        return data, encoder
     data = get_data()
-    data = preprocess_data(data)
-    return data
+    data, encoder = preprocess_data(data)
+    return data, encoder
+
 
 
 if __name__ == '__main__':
