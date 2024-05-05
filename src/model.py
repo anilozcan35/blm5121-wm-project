@@ -177,11 +177,11 @@ class ClassificationTask(TaskType):
 
 class ClusteringTask(TaskType):
 
-    def __init__(self, dataframe, task_type="clustering", task_params=None, ):
+    def __init__(self, dataframe, n_cluster=4, task_type="clustering", task_params=None, ):
         self.km = None
         self.scaled_frame = None
         self.task_type = task_type
-        self.n_clusters = 4
+        self.n_clusters = n_cluster
 
         super().__init__(task_params, self.task_type, dataframe)
 
