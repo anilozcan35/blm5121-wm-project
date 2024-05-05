@@ -1,8 +1,9 @@
-import streamlit as st
-import pandas as pd
 import numpy as np
-import preprocess
-import model
+import pandas as pd
+import streamlit as st
+
+import src.model as model
+import src.preprocess as preprocess
 
 with st.sidebar:
     st.write("sidebar")
@@ -29,10 +30,4 @@ with col2:
     fig_clusters = clustering_task.cluster_plots()
     st.pyplot(fig_clusters)
 
-
-
-
-
 st.markdown("#### Prediction Section")
-
-
