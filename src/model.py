@@ -269,44 +269,25 @@ class ClusteringTask(TaskType):
         plt.legend()
         return fig
 
-df = preprocess.preprocess()
-classifcation_task = ClassificationTask(df)
-prediction = classifcation_task.tune_and_predict_classification("naive_bayes")
-print(prediction)
 
-DATA_PATH = "data/bodyPerformance.csv"
-raw_df = pd.read_csv(DATA_PATH)
-
-raw_df["class"].value_counts()
-
-df.iloc[1]
-df.tail(1)
-
-age = 28
-gender = "M"
-height_cm = 170
-weight_kg = 55.8
-fat = 15.7
-diastolic = 77.0
-systolic = 126.0
-gripForce = 36.4
-forward_cm = 16.3
-sit_ups = 53.0
-jump_cm = 229.0
-classs = "A" #rastgele bir label
-
-
-ss = [age, gender, height_cm, weight_kg, fat, diastolic, systolic, gripForce, forward_cm, sit_ups, jump_cm, classs]
-raw_df.loc[len(raw_df)] = ss
-
-
-
-raw_df["class"]
 if __name__ == '__main__':
 
-    df = preprocess.preprocess()
+    df, *args = preprocess.preprocess()
     classifcation_task = ClassificationTask(df)
     prediction = classifcation_task.tune_and_predict_classification("decision_tree")
+    age = 28
+    gender = "M"
+    height_cm = 170
+    weight_kg = 55.8
+    fat = 15.7
+    diastolic = 77.0
+    systolic = 126.0
+    gripForce = 36.4
+    forward_cm = 16.3
+    sit_ups = 53.0
+    jump_cm = 229.0
+    classs = "A"  # rastgele bir label
+    ss = [age, gender, height_cm, weight_kg, fat, diastolic, systolic, gripForce, forward_cm, sit_ups, jump_cm, classs]
     pred = classifcation_task.predict(ss)
     print(pred)
 
