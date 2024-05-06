@@ -190,16 +190,16 @@ class ClassificationTask(TaskType):
 
     def predict(self, record_list):
         raw_df = preprocess.get_data()
-        raw_df.loc[len(raw_df)] = record_list
+        raw_df.loc[len(raw_df)] = [31.0, 'F', 179.0, 78.0, 20.0, 92.0, 152.0, 45.0, 12.0, 49.0, 181.0, 'A']
         preprocessed_df_with_record, encoder = preprocess.preprocess(pred_mode=True, df=raw_df)
-        with open(str(self.model_name) + 'model.pkl', 'rb') as f:
+        with open('decision_treemodel.pkl', 'rb') as f:
             model = pickle.load(f)
         record_pred = model.predict(preprocessed_df_with_record[preprocessed_df_with_record.columns[:-1]].tail(1))
-        preprocessed_df_with_record.loc[len(preprocessed_df_with_record)]["encoded_class"] = record_pred
+        preprocessed_df_with_record.loc[len(preprocessed_df_with_record), "encoded_class"] = record_pred
         preprocessed_df_with_record["class"] = encoder.inverse_transform(preprocessed_df_with_record["encoded_class"])
-        classs = preprocessed_df_with_record.iloc[-1]["class"]
+        predicted_class = preprocessed_df_with_record.iloc[-1]["class"]
 
-        return classs
+        return predicted_class
 
 
 class ClusteringTask(TaskType):
@@ -299,3 +299,5 @@ if __name__ == '__main__':
     df = preprocess.preprocess()
     regressiontask = RegressionTask(df)
     regressiontask.encode_and_regression()
+
+
