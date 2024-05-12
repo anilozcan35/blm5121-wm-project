@@ -3,6 +3,7 @@ import pandas as pd
 import streamlit as st
 from ydata_profiling import ProfileReport
 
+
 # @st.cache
 def data_preview(file_path: str):
     st.write('**Data Name:**', file_path.split('\\')[-1])
@@ -67,3 +68,4 @@ def data_profilingA(file_path: str, report_path: str, report_file_name: str, min
         df_data = pd.read_csv(file_path)
         profile = ProfileReport(df=df_data, title="Profiling Report", minimal=minimal)
         profile.to_file(os.path.join(report_path, report_file_name + ".html"))
+
