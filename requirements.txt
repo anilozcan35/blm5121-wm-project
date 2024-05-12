@@ -7,10 +7,16 @@
 # conda activate vm_env
 # jupyterlab
 
-pandas
-scikit-learn
 streamlit
+python-dotenv
+pandas
+ydata-profiling
+scikit-learn
 matplotlib
 seaborn
 plotly
 yellowbrick
+kaggle
+pylint
+# streamlit-authenticator
+# st-pages
