@@ -16,24 +16,50 @@ from src.functions import download_dataset_from_kaggle
 from src.streamlit_functions import (data_metadata, data_preview,
                                      data_profiling, data_profilingA)
 
+from src.models.dt_algoritm import dt_train, dt_prediction, dt_model_chart, dt_model_evaluation, dt_save_model
+
 # from st_pages import show_pages_from_config
 
 warnings.filterwarnings("ignore")
 
 
 def home():
+    """Home Page of Streamlit UI"""
+
     st.title('Web Mining Project Title', anchor='top', help='Web Mining Project Help')
     st.header('Web Mining Project Header')
     st.subheader('Bu uygulama Web Mining (BLM-5121) Projesi kapsamında ML Algoritmaları için geliştirilmiştir.')
     st.markdown('**1. Project Proposal:** Proje önerisi ve proje hakkında bilgi alabilirsiniz.')
-    st.markdown('**2. Dataset Info:** Veri seti önizlemesi yapabilirsiniz. Veri seti hakkında bilgi alabilirsiniz.')
-    st.markdown('**3. Multi Class Classification:** Çoklu sınıflandırma uygulamasıdır. Veri seti üzerinde çoklu sınıflandırma yapabilirsiniz.')
-    st.markdown('**4. Regression:** Regresyon uygulamasıdır. Veri seti üzerinde regresyon analizi yapabilirsiniz.')
-    st.markdown('**5. Clustering:** Kümeleme uygulamasıdır. Veri seti üzerinde kümeleme analizi yapabilirsiniz.')
-    st.markdown('**6. App Info. & Credits:** Bu projede kullanılan Framework ve Libraryleri içermektedir.')
+    st.markdown('**2. Project System Design:** Proje aşamaları ve sistem tasarımı hakkında bilgi alabilirsiniz.')
+    st.markdown('**3. Dataset Info:** Veri seti önizlemesi yapabilirsiniz. Veri seti hakkında bilgi alabilirsiniz.')
+    st.markdown('**4. Multi Class Classification:** Çoklu sınıflandırma uygulamasıdır. Veri seti üzerinde çoklu sınıflandırma yapabilirsiniz.')
+    st.markdown('**5. Regression:** Regresyon uygulamasıdır. Veri seti üzerinde regresyon analizi yapabilirsiniz.')
+    st.markdown('**6. Clustering:** Kümeleme uygulamasıdır. Veri seti üzerinde kümeleme analizi yapabilirsiniz.')
+    st.markdown('**7. App Info. & Credits:** Bu projede kullanılan Framework ve Libraryleri içermektedir.')
+
+
+def proposal():
+    """Project Proposal Page"""
+
+    with open(file="ProjectProposal.md", encoding="utf8") as p:
+        st.markdown(p.read())
+
+
+def pipeline():
+    """Project System Design Page"""
+    st.title('Project System Design Title')
+    st.header('Project System Design Header')
+    st.subheader('Proje Sistemi Tasarımı: Proje aşamaları ve sistem tasarımı hakkında bilgi alabilirsiniz.')
+    st.image(image="./pipeline/SystemDesign.jpg", 
+             caption="Project System Design", 
+             width=200, 
+             use_column_width="auto"
+             )
 
 
 def data():
+    """Dataset Information Page"""
+
     st.title('Dataset Information Title')
     st.header('Dataset Information Header')
     st.subheader('Veri seti önizlemesi yapabilirsiniz. Veri seti hakkında bilgi alabilirsiniz.')
@@ -64,12 +90,9 @@ def data():
             components.html(p.read(), height=4096, width=2160, scrolling=True)
 
 
-def proposal():
-    with open(file="ProjectProposal.md", encoding="utf8") as p:
-        st.markdown(p.read())
-
-
 def classification():
+    """Multi Class Classification Page"""
+
     st.title('Multi Class Classification Title')
     st.header('Multi Class Classification Algorithms Header')
     st.subheader('Çoklu sınıflandırma uygulamasıdır. Veri seti üzerinde çoklu sınıflandırma yapabilirsiniz.')
@@ -89,15 +112,22 @@ def classification():
         with tab1_1:
             st.header("Decision Tree Training Component")
             st.write('Decision Tree işlemi yapılacak.')
+            dt_train(df_test=None, target_column=None, model_name=None, model_params=None)
+            
         with tab1_2:
             st.header("Decision Tree Model Charts")
             st.write('Decision Tree işlemi yapılacak.')
+            dt_model_chart(model_name=None, model_params=None, df_test=None, target_column=None)
+            
         with tab1_3:
             st.header("Decision Tree Pre")
             st.write('Decision Tree işlemi yapılacak.')
+            dt_prediction(df_test=None, model_name=None, model_params=None)
+
         with tab1_4:
             st.header("Decision Tree Other")
             st.write('Decision Tree işlemi yapılacak.')
+            dt_model_evaluation(model_name=None, model_params=None, df_test=None, target_column=None)
 
     with tab2:
         st.header("K Nearest Neighboor")
@@ -145,6 +175,8 @@ def classification():
             st.write('CatBoost işlemi yapılacak.')
 
 def regression():
+    """Regression Page"""
+
     st.title('Regression Title')
     st.header('Regression Algorithms Header')
     st.subheader('Regresyon uygulamasıdır. Veri seti üzerinde regresyon analizi yapabilirsiniz.')
@@ -171,6 +203,8 @@ def regression():
 
 
 def clustering():
+    """Clustering Page"""
+
     st.title('Clustering Title')
     st.header('Clustering Algorithms Header')
     st.subheader('Kümeleme uygulamasıdır. Veri seti üzerinde kümeleme analizi yapabilirsiniz.')
@@ -178,6 +212,8 @@ def clustering():
 
 
 def credits():
+    """App Info. & Credits Page"""
+
     st.title('App Info. & Credits Title')
     st.header('App Info. & Credits Header')
     st.subheader('App Info. & Credits: Bu projede kullanılan Framework ve Libraryleri içermektedir.')
@@ -206,6 +242,7 @@ def menu(user_name=None, user_password=None):
     menu = {
         'Giriş': home,
         'Project Proposal': proposal,
+        'Project System Design': pipeline,
         'Dataset Info': data,
         'Multi Class Classification Algorithms': classification,
         'Regression Algorithms': regression,
@@ -253,17 +290,14 @@ if __name__ == "__main__":
     USER_NAME = os.environ.get("USER_NAME")
     USER_PASSWORD = os.environ.get("USER_PASSWORD")
 
-    # st.set_page_config(page_title=None,
-    #                    page_icon=None,
-    #                    layout="centered",
-    #                    initial_sidebar_state="auto",
-    #                    menu_items=None)
-
     st.set_page_config(
         page_title="Web Mining Project UI ",
         page_icon=":gem:",
         layout="wide",
+        # layout="centered",        
         initial_sidebar_state="expanded",
+        # initial_sidebar_state="auto",
+        # menu_items=None,
         menu_items={'Get Help': 'https://www.extremelycoolapp.com/help',
                     'Report a bug': "https://www.extremelycoolapp.com/bug",
                     'About': "# This is a header. This is an *extremely* cool app!"
@@ -275,3 +309,4 @@ if __name__ == "__main__":
     data_profilingA(file_path=DATA_FILE, report_path=PROFILLING_PATH, minimal=False, report_file_name="RawDataProfilingReport")
     data_profilingA(file_path=DATA_FILE, report_path=PROFILLING_PATH, minimal=False, report_file_name="PreprocessDataProfilingReport")
     menu(user_name=USER_NAME, user_password=USER_PASSWORD)
+
