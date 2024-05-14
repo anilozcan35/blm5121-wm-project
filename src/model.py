@@ -266,6 +266,31 @@ class ClusteringTask(TaskType):
         plt.legend()
         return fig
 
+    @staticmethod
+    def predict(record_list, n_clusters=4):
+        raw_df = preprocess.get_data()
+        raw_df.loc[len(raw_df)] = record_list
+        pass_df = raw_df.copy()
+        preprocessed_df, _ = preprocess.preprocess(pred_mode=True, df=pass_df)
+        ct = ClusteringTask(preprocessed_df, n_cluster=n_clusters)
+        ct.clustering_scale_df()
+        print(ct.scaled_frame)
+        fig = plt.figure()
+        ct.km_optima()
+        sns.set_theme(rc=None, style='whitegrid', palette='bright')
+        x_column_name = ct.scaled_frame.columns[0]
+        y_column_name = ct.scaled_frame.columns[1]
+        sns.scatterplot(x=ct.scaled_frame.iloc[:, 0], y=ct.scaled_frame.iloc[:, 1], hue=ct.km.labels_,
+                        palette='bright')
+        plt.scatter(ct.scaled_frame.iloc[-1, 0], ct.scaled_frame.iloc[-1, 1], marker='X', s=100,
+                    label=ct.km.labels_[-1], color='black')
+
+        plt.xlabel(f"{x_column_name}")
+        plt.ylabel(f"{y_column_name}")
+        plt.title("Cluster plots and prediction")
+        plt.legend()
+        return fig
+
 
 if __name__ == '__main__':
 
