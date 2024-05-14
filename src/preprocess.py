@@ -15,7 +15,7 @@ def get_data():
     return df
 
 
-def preprocess_data(data):
+def preprocess_data(data, pred=False):
     columns_to_rename = {
         'body fat_%': "body_fat_percent",
         'gripForce': "grip_force",
@@ -24,7 +24,10 @@ def preprocess_data(data):
         'broad jump_cm': 'broad_jump_cm',
     }
     data.rename(columns=columns_to_rename, inplace=True)
-    data.drop_duplicates(inplace=True)
+    print("disarisi")
+    if pred == False:
+        print("icerisi")
+        data.drop_duplicates(inplace=True)
     for column in data.columns:
         if "cm" in column:
             data[column[:-2] + "m"] = data[column] / 100
@@ -60,8 +63,11 @@ def preprocess_data(data):
 
 
 def preprocess(pred_mode=False, df=None):
+    """eger prediction yapılacaksa, data preprocess edilir.
+    pred_mode=false ise raw data preprocess sokulur.
+    """
     if pred_mode:
-        data, encoder = preprocess_data(df)
+        data, encoder = preprocess_data(df, pred=True)
         return data, encoder
     data = get_data()
     data, encoder = preprocess_data(data)
