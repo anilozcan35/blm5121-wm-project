@@ -148,6 +148,8 @@ def classification():
 
             if dt_train_button:
                 classification_report, cm = dt_algoritm.dt_train(model_name="decision_tree")
+                st.session_state["classification_report"] = classification_report
+                st.session_state["cm"] = cm
 
                 with tab1_2:
                     st.header("Decision Tree Model Charts")
@@ -170,15 +172,16 @@ def classification():
                     st.write(pred)
 
                     with tab1_1:
-                        classification_report, cm = dt_algoritm.dt_train(model_name="decision_tree")
+                        st.write("**Training Decision Tree Model**...")
+                        st.write("**Training Done, Check Tabs**...")
 
                     with tab1_2:
                         st.header("Decision Tree Model Charts")
-                        st.pyplot(cm)
+                        st.pyplot(st.session_state["cm"])
 
                     with tab1_4:
                         st.header("Decision Tree Other")
-                        st.dataframe(classification_report)
+                        st.dataframe(st.session_state["classification_report"])
 
     with tab2:
         st.header("K Nearest Neighbor")
@@ -193,6 +196,8 @@ def classification():
 
             if knn_train_button:
                 classification_report, cm = knn_algoritm.knn_train(model_name="knn")
+                st.session_state["classification_report"] = classification_report
+                st.session_state["cm"] = cm
 
                 with tab2_2:
                     st.header("K Nearest Neighbor Model Charts")
@@ -215,15 +220,16 @@ def classification():
                     st.write(pred)
 
                     with tab2_1:
-                        classification_report, cm = knn_algoritm.knn_train(model_name="knn")
+                        st.write("**Training Decision Tree Model**...")
+                        st.write("**Training Done, Check Tabs**...")
 
                     with tab2_2:
                         st.header("K Nearest Neighbor Model Charts")
-                        st.pyplot(cm)
+                        st.pyplot(st.session_state["cm"])
 
                     with tab2_4:
                         st.header("Other")
-                        st.dataframe(classification_report)
+                        st.dataframe(st.session_state["classification_report"])
 
     with tab3:
         st.header("Naive Bayes")
@@ -238,6 +244,8 @@ def classification():
 
             if nb_train_button:
                 classification_report, cm = nb_algorithm.nb_train(model_name="naive_bayes")
+                st.session_state["classification_report"] = classification_report
+                st.session_state["cm"] = cm
 
                 with tab3_2:
                     st.header("Naive Bayes Model Charts")
@@ -260,15 +268,16 @@ def classification():
                     st.write(pred)
 
                     with tab3_1:
-                        classification_report, cm = nb_algorithm.nb_train(model_name="naive_bayes")
+                        st.write("**Training Decision Tree Model**...")
+                        st.write("**Training Done, Check Tabs**...")
 
                     with tab3_2:
                         st.header("Naive Bayes Model Charts")
-                        st.pyplot(cm)
+                        st.pyplot(st.session_state["cm"])
 
                     with tab3_4:
                         st.header("Other")
-                        st.dataframe(classification_report)
+                        st.dataframe(st.session_state["classification_report"])
 
 
 
@@ -316,6 +325,8 @@ def clustering():
         show_clicked = st.button("Train K-means", key=106)
         if show_clicked:
             fig_elbow, fig_clusters = k_means.k_means_train(selected_n_cluster=selected_n_cluster)
+            st.session_state["fig_elbow"] = fig_elbow
+            st.session_state["fig_cluster"] = fig_clusters
             with tab2:
                 st.subheader("Elbow Graph")
                 st.write('K Params Optimal for 4')
@@ -336,14 +347,18 @@ def clustering():
                 st.header("Prediction of Point")
                 st.pyplot(fig)
 
-                fig_elbow, fig_clusters = k_means.k_means_train(selected_n_cluster=selected_n_cluster)
+                with tab1:
+                    st.write("**Training k-Means Model**...")
+                    st.write("**Training Done, Check Tabs**...")
+
                 with tab2:
                     st.subheader("Elbow Graph")
                     st.write('K Params Optimal for 4')
-                    st.pyplot(fig_elbow)
+                    st.pyplot(st.session_state["fig_elbow"])
+
                 with tab3:
                     st.subheader("Clusters")
-                    st.pyplot(fig_clusters)
+                    st.pyplot(st.session_state["fig_cluster"])
                     # Buralardaki kod tekrarnı nasıl çözülebilir.
 
 
