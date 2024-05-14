@@ -128,9 +128,6 @@ class RegressionTask(TaskType):
         return mse
 
 
-
-
-
 class ClassificationTask(TaskType):
 
     def __init__(self, dataframe, task_type="classification", task_params=None):
@@ -178,7 +175,7 @@ class ClassificationTask(TaskType):
         y_pred = best_model.predict(X_test)
 
         # dump alınması
-        with open(str(self.model_name) + 'model.pkl', 'wb') as f:
+        with open("./models/"+str(self.model_name) + 'model.pkl', 'wb') as f:
             pickle.dump(best_model, f)
 
         # confusion matrix create ediliyor.
@@ -186,13 +183,14 @@ class ClassificationTask(TaskType):
         sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, fmt='g')
 
         # Sınıflandırma raporu
-        return classification_report(y_test, y_pred, output_dict= True), fig
+        return classification_report(y_test, y_pred, output_dict=True), fig
 
-    def predict(self, record_list):
+    @staticmethod
+    def predict(record_list, model_name=None):
         raw_df = preprocess.get_data()
-        raw_df.loc[len(raw_df)] = [31.0, 'F', 179.0, 78.0, 20.0, 92.0, 152.0, 45.0, 12.0, 49.0, 181.0, 'A']
+        raw_df.loc[len(raw_df)] = record_list
         preprocessed_df_with_record, encoder = preprocess.preprocess(pred_mode=True, df=raw_df)
-        with open('decision_treemodel.pkl', 'rb') as f:
+        with open('./models/'+str(model_name)+'model.pkl', 'rb') as f:
             model = pickle.load(f)
         record_pred = model.predict(preprocessed_df_with_record[preprocessed_df_with_record.columns[:-1]].tail(1))
         preprocessed_df_with_record.loc[len(preprocessed_df_with_record), "encoded_class"] = record_pred
@@ -209,7 +207,6 @@ class ClusteringTask(TaskType):
         self.scaled_frame = None
         self.task_type = task_type
         self.n_clusters = n_cluster
-
         super().__init__(task_params, self.task_type, dataframe)
 
     def clustering_scale_df(self):
