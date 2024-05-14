@@ -1,21 +1,19 @@
 import streamlit as st
+from src import preprocess
+from src import  model
 
-def dt_train(df_test, target_column, model_name, model_params):
+def dt_train(model_name = "decision_tree"):
         st.write("**Training Decision Tree Model**...")
-        # pass
+        df = preprocess.get_data()
+        df, arg = preprocess.preprocess(pred_mode=False, df=df)
+        ct = model.ClassificationTask(dataframe=df, task_type="classification")
+        classification_report, figure = ct.tune_and_predict_classification(model_name=model_name)
+        st.write("**Training Done, Check Tabs**...")
+        return classification_report, figure
 
-def dt_prediction(df_test, model_name, model_params):
+
+def dt_prediction(record_list):
     st.write("**Predicting with Decision Tree Model**...")
-    # pass
+    predicted_class = model.ClassificationTask.predict(record_list=record_list, model_name="decision_tree")
+    return predicted_class
 
-def dt_model_evaluation(model_name, model_params, df_test, target_column):
-    st.write("**Evaluating Decision Tree Model**...")
-    # pass
-
-def dt_model_chart(model_name, model_params, df_test, target_column):
-    st.write("**Decision Tree Model Chart**...")
-    # pass
-
-def dt_save_model(model_name, model_params, model_path):
-    st.write("**Saving Decision Tree Model**...")
-    # pass
