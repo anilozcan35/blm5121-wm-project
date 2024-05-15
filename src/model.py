@@ -89,6 +89,7 @@ class TaskType:
 class RegressionTask(TaskType):
 
     def __init__(self, dataframe, task_type="regression", task_params=None, ):
+        self.best_model = None
         self.task_type = task_type
         super().__init__(task_params, self.task_type, dataframe)
         self.cv = StratifiedShuffleSplit(n_splits=5, test_size=.20, random_state=42)
@@ -108,9 +109,14 @@ class RegressionTask(TaskType):
         # En iyi modeli seçme
         best_model = grid_search.best_estimator_
 
+        # Modelin Dumpının alınması
+        if dump:
+            with open("./models/regression_model.pkl", 'wb') as f:
+                pickle.dump(best_model, f)
 
         # Tahmin yapma
         y_pred = best_model.predict(X_test)
+        self.best_model = best_model
 
         # Hata ölçümü (örneğin, MSE)
         mse = mean_squared_error(y_test, y_pred)
@@ -125,7 +131,40 @@ class RegressionTask(TaskType):
         print("Prediction on test set:")
         print(y_pred)
 
-        return mse, self.best_params
+        return mse, self.best_params, self.best_model
+
+    def reg_plots(self, x_index=0, y_index=-1, rc=None):
+
+        fig = plt.figure()
+        y_pred = self.best_model.predict(self.X_test)
+        sns.set_theme(color_codes=True)
+        x_column_name = self.dataframe.columns[x_index]
+        y_column_name = self.dataframe.columns[y_index]
+        sns.scatterplot(x=self.X_train.iloc[:, 0], y=self.y_train.iloc[:]
+                        )
+        sns.regplot(x=self.X_test.iloc[:, 0], y=y_pred[:]);
+        plt.xlabel(f"{x_column_name}")
+        plt.ylabel(f"{y_column_name} (Numeric)")
+        plt.ylim(0, 105)
+        plt.title("Regression plots")
+        plt.legend()
+
+
+
+        return fig
+
+    @staticmethod
+    def predict(record_list):
+        raw_df = preprocess.get_data()
+        raw_df = raw_df.sample(100)
+        raw_df.loc[len(raw_df)] = record_list
+        preprocessed_record, encoder = preprocess.preprocess(pred_mode=True, df=raw_df)
+        with open('./models/regression_model.pkl', 'rb') as f:
+            model = pickle.load(f)
+        record_pred = model.predict(preprocessed_record[preprocessed_record.columns[:-1]].tail(1))
+
+        return record_pred
+
 
 
 class ClassificationTask(TaskType):
@@ -294,6 +333,10 @@ class ClusteringTask(TaskType):
 
 
 if __name__ == '__main__':
+    df, *args = preprocess.preprocess()
+    rt = RegressionTask(df)
+    rt.encode_and_regression()
+    rt.reg_plots()
 
     df, *args = preprocess.preprocess()
     classifcation_task = ClassificationTask(df)
