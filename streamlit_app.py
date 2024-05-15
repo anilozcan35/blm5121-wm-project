@@ -193,9 +193,10 @@ def classification():
             st.header("K Nearest Neighbor Training Component")
             st.write('K Nearest Neighbor Process Will Be Done.')
             knn_train_button = st.button("Train KNN")
+            selected_n_neighbor = st.slider("Set Neighbbor Count", min_value=2, max_value=6, value=4)
 
             if knn_train_button:
-                classification_report, cm = knn_algoritm.knn_train(model_name="knn")
+                classification_report, cm = knn_algoritm.knn_train(model_name="knn", k=selected_n_neighbor)
                 st.session_state["classification_report"] = classification_report
                 st.session_state["cm"] = cm
 

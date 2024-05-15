@@ -50,7 +50,6 @@ class TaskType:
                 },
                 {
                     # KNeighborsClassifier
-                    'n_neighbors': [3, 4, 5, 6],
                     "weights": ['uniform', 'distance'],
                     "p": [1, 2]
                 }]
@@ -120,19 +119,21 @@ class RegressionTask(TaskType):
         # En iyi modelin hiperparametrelerini ve performansını yazdırma
         print("Best model parameters:")
         print(best_model.get_params())
+        self.best_params = best_model.get_params()
 
         # Eğitim ve test setleri üzerinde tahminleme sonuçları
         print("Prediction on test set:")
         print(y_pred)
 
-        return mse
+        return mse, self.best_params
 
 
 class ClassificationTask(TaskType):
 
-    def __init__(self, dataframe, task_type="classification", task_params=None):
+    def __init__(self, dataframe, task_type="classification", task_params=None, k=None):
         self.model_name = None
         self.task_type = task_type
+        self.k = k
         super().__init__(task_params, self.task_type, dataframe)
         self.cv = StratifiedShuffleSplit(n_splits=5, test_size=.20, random_state=42)
 
@@ -153,7 +154,7 @@ class ClassificationTask(TaskType):
 
         elif model_name == 'knn':
             from sklearn.neighbors import KNeighborsClassifier
-            model = KNeighborsClassifier(n_jobs=-1)
+            model = KNeighborsClassifier(n_jobs=-1, n_neighbors=self.k)
             param_grid = self.task_params[2]
             self.model_name = model_name
 
