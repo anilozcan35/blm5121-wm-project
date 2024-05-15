@@ -24,9 +24,7 @@ def preprocess_data(data, pred=False):
         'broad jump_cm': 'broad_jump_cm',
     }
     data.rename(columns=columns_to_rename, inplace=True)
-    print("disarisi")
     if pred == False:
-        print("icerisi")
         data.drop_duplicates(inplace=True)
     for column in data.columns:
         if "cm" in column:
