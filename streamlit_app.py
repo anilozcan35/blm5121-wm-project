@@ -1,6 +1,7 @@
 import os
 import warnings
 
+import pandas as pd
 # import threading
 # import time
 # from datetime import datetime
@@ -15,7 +16,7 @@ from dotenv import load_dotenv
 from src.functions import download_dataset_from_kaggle
 from src.streamlit_functions import (data_metadata, data_preview,
                                      data_profiling, data_profilingA)
-from src.models import dt_algoritm, knn_algoritm, nb_algorithm, k_means
+from src.models import dt_algoritm, knn_algoritm, nb_algorithm, k_means, regression_algorithm
 
 from src.models.dt_algoritm import dt_train, dt_prediction
 
@@ -288,26 +289,47 @@ def regression():
     st.title('Regression Title')
     st.header('Regression Algorithms Header')
     st.subheader('Regresyon uygulamasıdır. Veri seti üzerinde regresyon analizi yapabilirsiniz.')
-    tab1, tab2, tab3 = st.tabs(["Training Component", "Model Charts", "Prediction Component"])
+    tab1, tab2, tab3 = st.tabs(["Training Component", "Model Outputs", "Prediction Component"])
 
     with tab1:
-        st.header("Training Component")
-        st.write('Training Component işlemi yapılacak.')
+        st.header("Regression Model Training Component")
+        st.write('Regression Model Training Process Will Be Done.')
+        rg_button_train = st.button("Train ", key=107)
 
-    with tab2:
-        st.header("Model Charts")
-        st.write('Model Charts işlemi yapılacak.')
-        tab2_1, tab2_2, tab2_3 = st.tabs(["Loss Model Charts", "Accuracy Model Charts", "Other Model Charts"])
-        with tab2_1:
-            st.image("https://static.streamlit.io/examples/dog.jpg", width=200)
-        with tab2_2:
-            st.image("https://static.streamlit.io/examples/dog.jpg", width=200)
-        with tab2_3:
-            st.image("https://static.streamlit.io/examples/dog.jpg", width=200)
+        if rg_button_train:
+            mse, best_params, best_model, fig = regression_algorithm.regression_train()
+            bp = pd.DataFrame.from_dict(best_params, orient="index")
+            st.session_state["mse"] = mse
+            st.session_state["best_params"] = bp.T
+            st.session_state["best_model"] = best_model
+            st.session_state["fig"] = fig
 
-    with tab3:
-        st.header("Prediction Component")
-        st.write('Prediction Component işlemi yapılacak.')
+            with tab2:
+                st.header("Regression Model Chart")
+                st.pyplot(fig)
+
+                st.subheader("Output Of GridSearch Best Parameters:")
+                st.dataframe(bp.T)
+        with tab3:
+            st.header("Regression Model Prediction")
+            prediction_record = get_prediction_records(key_start=44)
+            reg_predict_button = st.button("Predict", key=105)
+
+            if reg_predict_button:
+                pred = regression_algorithm.regression_predict(prediction_record)
+                st.header("Predicted Body Score Of Given Record is:")
+                st.write(pred)
+
+                with tab1:
+                    st.write("**Training Regression Model Model**...")
+                    st.write("**Training Done, Check Tabs**...")
+
+                with tab2:
+                    st.header("Regression Model Charts")
+                    st.pyplot(st.session_state["fig"])
+
+                    st.subheader("best_params")
+                    st.dataframe(st.session_state["best_params"])
 
 
 def clustering():

@@ -17,8 +17,3 @@ def k_means_predict(record_list, selected_n_cluster):
     fig = model.ClusteringTask.predict(record_list=record_list, n_clusters=selected_n_cluster)
     return fig
 
-
-def knn_prediction(record_list):
-    st.write("**Predicting with KNN Model**...")
-    predicted_class = model.ClassificationTask.predict(record_list=record_list, model_name="knn")
-    return predicted_class

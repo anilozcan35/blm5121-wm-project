@@ -30,7 +30,7 @@ def preprocess_data(data):
     }
     data.rename(columns=columns_to_rename, inplace=True)
     data.drop_duplicates(inplace=True)
-    for column in df.columns:
+    for column in data.columns:
         if "cm" in column:
             data[column[:-2] + "m"] = data[column] / 100
             data.drop(column, inplace=True, axis=1)
