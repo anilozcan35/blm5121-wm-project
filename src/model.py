@@ -149,8 +149,6 @@ class RegressionTask(TaskType):
         plt.title("Regression plots")
         plt.legend()
 
-
-
         return fig
 
     @staticmethod
